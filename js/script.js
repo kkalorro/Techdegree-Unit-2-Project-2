@@ -5,51 +5,25 @@ FSJS project 2 - List Filter and Pagination
    
 // Study guide for this project - https://drive.google.com/file/d/1OD1diUsTMdpfMDv677TfL1xO2CEkykSz/view?usp=sharing
 
-/*** 
-   Add your global variables that store the DOM elements you will 
-   need to reference and/or manipulate. 
-   
-   But be mindful of which variables should be global and which 
-   should be locally scoped to one of the two main functions you're 
-   going to create. A good general rule of thumb is if the variable 
-   will only be used inside of a function, then it can be locally 
-   scoped to that function.
-***/
-
-/*** 
-   Create the `showPage` function to hide all of the items in the 
-   list except for the ten you want to show.
-
-   Pro Tips: 
-     - Keep in mind that with a list of 54 students, the last page 
-       will only display four.
-     - Remember that the first student has an index of 0.
-     - Remember that a function `parameter` goes in the parens when 
-       you initially define the function, and it acts as a variable 
-       or a placeholder to represent the actual function `argument` 
-       that will be passed into the parens later when you call or 
-       "invoke" the function 
-***/
-
-/*** 
-   Create the `appendPageLinks function` to generate, append, and add 
-   functionality to the pagination buttons.
-***/
-
 // Remember to delete the comments that came with this file, and replace them with your own code comments.
 
 //////////
 // Init //
 //////////
 
-// Container holding list students
+// Select class Page
+const selectPage = document.getElementsByClassName('page')[0];
+// Select container holding list students
 const selectUnorderedList = document.querySelector('.student-list');
-// List of students
+// Select listed students
 let selectListItem = selectUnorderedList.children;
-// Input text box
+// Select input text box
 const selectInputTextName = document.querySelector('#inputTextName');
-// Add entry button
+// Select submit entry button
 const selectButtonAddName = document.querySelector('#buttonAddName');
+
+// Total number of entries to show
+const maxItemsPerPage = 10;
 
 ///////////////
 // Functions //
@@ -66,18 +40,31 @@ function hideAllListItems(bool) {
    }
 }
 
+// Functionality to show specific results on page
+/*** 
+   Create the `showPage` function to hide all of the items in the 
+   list except for the ten you want to show.
+
+   Pro Tips: 
+     - Keep in mind that with a list of 54 students, the last page 
+       will only display four.
+     - Remember that the first student has an index of 0.
+     - Remember that a function `parameter` goes in the parens when 
+       you initially define the function, and it acts as a variable 
+       or a placeholder to represent the actual function `argument` 
+       that will be passed into the parens later when you call or 
+       "invoke" the function 
+***/
 const showPage = (list, page) => {
    // Hide all entries
    hideAllListItems(true);
    // Current active page.  Always 1.
    const currentPage = 1;
-   // Total number of entries to show
-   const pageEntries = 10;
    // startingIndex
-   let startIndex = (page - currentPage) * pageEntries;
+   let startIndex = (page - currentPage) * maxItemsPerPage;
    console.log(startIndex);
    // endingIndex subtracted by one to accomodate for computer counting
-   const endIndex = (page * pageEntries) - 1;
+   const endIndex = (page * maxItemsPerPage) - 1;
    console.log(endIndex);
    // loop over items in list parameter
    for (let i = 0; i < list.length; i++) {
@@ -89,6 +76,49 @@ const showPage = (list, page) => {
       }
    }
 }
+
+// Functionality for bottom page links
+/*** 
+   Create the `appendPageLinks function` to generate, append, and add 
+   functionality to the pagination buttons.
+***/
+const appendPageLinks = (list) => {
+   // Pages needed by divinding total list items by max items per page
+   const pages = Math.trunc(list.length / maxItemsPerPage) + 1;
+   
+   // Create a div and give it the 'pagination' class, append it to the .page div
+   // Possibly needs DIV or 'DIV'
+   const div = document.createElement('div');
+   div.className = 'pagination';
+
+   // Unordered List Div
+   const ul = document.createElement('ul');
+
+   // for every page, add li and a tags with the page number text
+   for (let i = 0; i < pages; i++) {
+      // Possibly needs LI or 'LI'
+      const li = document.createElement('li');
+      // li.textContent = i;   
+      
+      // Create hyperlink
+      const a = document.createElement('a');
+      a.textContent = i;
+      // a.href = showPage(selectListItem, i);
+
+      li.appendChild(a);
+      ul.appendChild(li);
+      div.appendChild(ul);
+   }
+
+   // add an event listener to each a tag.  when clicked call showPage()
+
+   // loop over pagination links to remove active class from all links
+
+   // add active class to the link that was just clicked.  you can identifiy that clicked link using event.target.
+   selectPage.appendChild(div);
+}
+
+appendPageLinks(selectListItem);
 
 ///////////////
 // Listeners //

@@ -117,3 +117,14 @@ body{
       background-color: #4ba6c3;
       color: #fff;
     }
+
+.search-form {
+  position: relative;
+  text-align: right;
+}
+
+.search-element {
+  /* position: relative; */
+  margin-left: .5rem;
+  /* text-align: right; */
+}

@@ -118,12 +118,12 @@ body{
       color: #fff;
     }
 
-.search-form {
+#form-search {
   position: relative;
   text-align: right;
 }
 
-.search-element {
+.element-search {
   /* position: relative; */
   margin-left: .5rem;
   /* text-align: right; */

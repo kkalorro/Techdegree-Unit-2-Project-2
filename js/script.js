@@ -15,10 +15,6 @@ const selectPageHeader = document.querySelector('.page-header');
 const selectUnorderedList = document.querySelector('.student-list');
 // Array of students
 const students = selectUnorderedList.children;
-// Select input text box
-const selectInputTextName = document.querySelector('#inputTextName');
-// Select submit entry button
-const selectButtonAddName = document.querySelector('#buttonAddName');
 
 // Total number of entries to show
 const maxItemsPerPage = 10;
@@ -27,41 +23,63 @@ const maxItemsPerPage = 10;
 // Functions //
 ///////////////
 
-// Create search form
-function appendSearchBar() {
-// Create div to hold search contents
-const div = document.createElement('div');
-div.className = 'search-form';
-
-// Create input search textbox
-const searchBar = document.createElement('input');
-searchBar.className = 'search-element';
-searchBar.type = 'text';
-div.appendChild(searchBar);
-
-// Create execute search button
-const searchButton = document.createElement('button');
-searchButton.className = 'search-element';
-searchButton.textContent = 'Search for student';
-div.appendChild(searchButton);
-
-// Append div into Page Header
-selectPageHeader.appendChild(div);
-}
-
-// Search student functionality
-function searchStudent() {
-   // Get string in textbox
-   // Hide all students
-   // Using search method, go through student list
-   // If search is true make hidden false
-}
-
 // Hide or show all students
 function hideAllListItems(bool) {
    for (let i = 0; i < students.length; i++) {
       students[i].hidden = bool;
    }
+}
+
+// Create search form elements and functionality
+function appendSearchBar() {
+   // Create form
+   const form = document.createElement('form');
+   form.id = 'form-search';
+
+   // Create input search textbox
+   const textbox = document.createElement('input');
+   textbox.className = 'element-search';
+   textbox.type = 'text';
+   form.appendChild(textbox);
+
+   // Create search button
+   const buttonSearch = document.createElement('input');
+   buttonSearch.className = 'element-search';
+   buttonSearch.type = 'submit';
+
+   // Execute search when submitted
+   buttonSearch.addEventListener('click', (e) => {
+      e.preventDefault();
+      const selectSearchForm = document.querySelector('#form-search');
+      const searchTextbox = selectSearchForm.firstElementChild;
+
+      // Hide all students
+      hideAllListItems(true);
+
+      // Go through list then find what matches the textbox
+      for (let i = 0; i < students.length; i++) {
+         
+      // Remove all whitespaces (Source: https://stackoverflow.com/questions/6623231/remove-all-white-spaces-from-text)
+      let test = students[i].textContent.replace(/\s/g, '').toLocaleLowerCase();
+
+      // Search functionality (Source: https://www.w3schools.com/jsref/jsref_search.asp)
+      let test2 = test.search(searchTextbox.value);
+ 
+         // If match found then show student
+         if (test2 >= 0) {
+             students[i].hidden = false;
+         }
+      }
+
+      // Reset textbox text
+      searchTextbox.value = '';
+   })
+
+   // Append search button to form
+   form.appendChild(buttonSearch);
+
+   // Append form into Page Header
+   selectPageHeader.appendChild(form);
 }
 
 // Show filtered students on page
@@ -78,7 +96,7 @@ const showPage = (list, page) => {
       if (i >= startIndex && i < endIndex) {
          // showItems
          // console.log(`[${i}] - ${list[i].firstElementChild.innerText}`);
-         console.log(i);
+         // console.log(i);
          list[i].hidden = false;
       }
    }
@@ -117,9 +135,11 @@ const appendPageLinks = (list) => {
             }
          } 
       })
+      // Append link to list item, then list item into unordered page
       li.appendChild(a);
       ul.appendChild(li);     
    }
+   // Append unordered list to new Div, then append new Div to Class page
    div.appendChild(ul);
    selectPage.appendChild(div);
 }
@@ -152,7 +172,7 @@ document.addEventListener('click', (event) => {
       let newLi = document.createElement('li');
       newLi.className = 'student-item cf';
       const customName = selectInputTextName.value;
-      // Replace spaces with a space (Source: https://stackoverflow.com/questions/3794919/replace-all-spaces-in-a-string-with)
+      // Replace spaces with a period (Source: https://stackoverflow.com/questions/3794919/replace-all-spaces-in-a-string-with)
       let customEmail = customName.replace(/ /g, '.').toLocaleLowerCase();
       
       // Vanity function that converts single digit numbers into double digits

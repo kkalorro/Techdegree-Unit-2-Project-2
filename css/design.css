@@ -123,8 +123,12 @@ body{
   text-align: right;
 }
 
-.element-search {
-  /* position: relative; */
-  margin-left: .5rem;
-  /* text-align: right; */
-}
+  .element-search {
+    /* position: relative; */
+    margin-left: .5rem;
+    /* text-align: right; */
+  }
+
+  .button-reset {
+    background-color: dodgerblue;
+  }

@@ -1,7 +1,4 @@
-///////////
-// To Do //
-///////////
-// - Add search function.
+// Searches need to compare no space/lowercase with no space/lowercase
 
 //////////
 // Init //
@@ -60,13 +57,13 @@ function appendSearchBar() {
       for (let i = 0; i < students.length; i++) {
          
       // Remove all whitespaces (Source: https://stackoverflow.com/questions/6623231/remove-all-white-spaces-from-text)
-      let test = students[i].textContent.replace(/\s/g, '').toLocaleLowerCase();
+      const studentInfo = students[i].textContent.replace(/\s/g, '').toLocaleLowerCase();
 
       // Search functionality (Source: https://www.w3schools.com/jsref/jsref_search.asp)
-      let test2 = test.search(searchTextbox.value);
+      const searchMatch = studentInfo.search(searchTextbox.value);
  
          // If match found then show student
-         if (test2 >= 0) {
+         if (searchMatch >= 0) {
              students[i].hidden = false;
          }
       }
@@ -77,6 +74,17 @@ function appendSearchBar() {
 
    // Append search button to form
    form.appendChild(buttonSearch);
+
+   // Create reset button
+   const buttonReset = document.createElement('button');
+   buttonReset.className = 'button-reset';
+   buttonReset.textContent = 'RESET';
+   buttonReset.addEventListener('click', (e) => {
+      e.preventDefault();
+      resetFilter();
+   })
+   // Append reset button to form
+   form.appendChild(buttonReset);
 
    // Append form into Page Header
    selectPageHeader.appendChild(form);
@@ -144,16 +152,32 @@ const appendPageLinks = (list) => {
    selectPage.appendChild(div);
 }
 
+function resetFilter() {
+   // Start on Page 1
+   showPage(students, 1);
+   // Reset all pagination links except for 1
+   const selectPagination = document.querySelector('.pagination');
+   const children = selectPagination.firstElementChild.childNodes;
+   // Go through all pagination links and make only the fist one "active"
+   for (i = 0; i < children.length; i++) {
+      const child = children[i].firstChild;
+      console.log(child);
+      if (i === 0) {
+         child.className = 'active';
+      } else {
+         child.className = '';
+      }
+   } 
+}
+
 ///////////////////////
 // Runtime Functions //
 ///////////////////////
-
 // Add search bar to webpage
 appendSearchBar();
 // Add page links to the bottom of the webpage
 appendPageLinks(students);
-// Start on Page 1
-showPage(students, 1);
+resetFilter();
 
 /////////////////////////
 // Debugging functions //

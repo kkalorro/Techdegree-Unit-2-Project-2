@@ -1,3 +1,8 @@
+///////////
+// To Do //
+///////////
+// - Add search function.
+
 //////////
 // Init //
 //////////
@@ -8,8 +13,8 @@ const selectPage = document.querySelector('.page');
 const selectPageHeader = document.querySelector('.page-header');
 // Select container holding list students
 const selectUnorderedList = document.querySelector('.student-list');
-// Select listed students
-const selectListItem = selectUnorderedList.children;
+// Array of students
+const students = selectUnorderedList.children;
 // Select input text box
 const selectInputTextName = document.querySelector('#inputTextName');
 // Select submit entry button
@@ -40,8 +45,6 @@ searchButton.className = 'search-element';
 searchButton.textContent = 'Search for student';
 div.appendChild(searchButton);
 
-// Add a reset button
-
 // Append div into Page Header
 selectPageHeader.appendChild(div);
 }
@@ -54,10 +57,10 @@ function searchStudent() {
    // If search is true make hidden false
 }
 
-// Hide all students
+// Hide or show all students
 function hideAllListItems(bool) {
-   for (let i = 0; i < selectListItem.length; i++) {
-      selectListItem[i].hidden = bool;
+   for (let i = 0; i < students.length; i++) {
+      students[i].hidden = bool;
    }
 }
 
@@ -66,14 +69,16 @@ const showPage = (list, page) => {
    // Hide all entries
    hideAllListItems(true);
    // startingIndex
-   let startIndex = (page - 1) * maxItemsPerPage;
+   const startIndex = (page - 1) * maxItemsPerPage;
    // endingIndex subtracted by one to accomodate for computer counting
-   const endIndex = (page * maxItemsPerPage) - 1;
-   // loop over items in list
+   const endIndex = (page * maxItemsPerPage);
+   // Loop over items in list
    for (let i = 0; i < list.length; i++) {
       // if index >= firstItem && index <= lastItem
-      if (i >= startIndex && i <= endIndex) {
+      if (i >= startIndex && i < endIndex) {
          // showItems
+         // console.log(`[${i}] - ${list[i].firstElementChild.innerText}`);
+         console.log(i);
          list[i].hidden = false;
       }
    }
@@ -81,8 +86,8 @@ const showPage = (list, page) => {
 
 // Create bottom pagination links
 const appendPageLinks = (list) => {
-   // Pages needed by divinding total list items by max items per page
-   const pages = Math.trunc(list.length / maxItemsPerPage) + 1;
+   // Pages needed by divinding total list items by max items per page rounded up
+   const pages = Math.ceil(list.length / maxItemsPerPage);
    
    // Create a div and give it the 'pagination' class, embed an unordered list in it
    const div = document.createElement('div');
@@ -95,8 +100,11 @@ const appendPageLinks = (list) => {
       const li = document.createElement('li');
       const a = document.createElement('a');
       a.textContent = i;
+      // Make first "active" by default
+      // Abbrv. If-statement, source: https://www.thoughtco.com/create-a-shorter-if-statement-in-javascript-2037428
+      (i === 1) ? a.className = 'active' : a.className = '';
       a.addEventListener('click', (e) => {
-         showPage(selectListItem, a.textContent);
+         showPage(students, a.textContent);
          // Loop over pagination links
          const selectPagination = document.querySelector('.pagination');
          const children = selectPagination.firstElementChild.childNodes;
@@ -116,19 +124,20 @@ const appendPageLinks = (list) => {
    selectPage.appendChild(div);
 }
 
+///////////////////////
+// Runtime Functions //
+///////////////////////
+
+// Add search bar to webpage
 appendSearchBar();
-appendPageLinks(selectListItem);
+// Add page links to the bottom of the webpage
+appendPageLinks(students);
+// Start on Page 1
+showPage(students, 1);
 
 /////////////////////////
 // Debugging functions //
 /////////////////////////
-
-/******************************************
-Treehouse Techdegree:
-FSJS project 2 - List Filter and Pagination
-******************************************/
-   
-// Study guide for this project - https://drive.google.com/file/d/1OD1diUsTMdpfMDv677TfL1xO2CEkykSz/view?usp=sharing
 
 // Random number generator for random gender and avatar
 function randNum(num) {

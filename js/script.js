@@ -62,15 +62,15 @@ function appendSearchBar() {
 
          // Search functionality (Source: https://www.w3schools.com/jsref/jsref_search.asp)
          const searchMatch = studentInfo.search(searchTextbox.value.replace(/\s/g, '').toLocaleLowerCase());
-
-         // Clear search text box now that we have stored the data
-         searchTextbox.value = '';
    
          // If match found then update filtered students list
          if (searchMatch >= 0) {
             studentsFiltered.push(students[i]);
          }
       }
+
+      // Clear search text box now that we're done with it
+      searchTextbox.value = '';
 
       // Update pagination links based on filtered students list
       appendPageLinks(studentsFiltered);
@@ -143,7 +143,7 @@ const appendPageLinks = (list) => {
       (i === 1) ? a.className = 'active' : a.className = '';
 
       a.addEventListener('click', (e) => {
-         showPage(students, a.textContent);
+         showPage(list, a.textContent);
          // Select pagination div
          const selectPagination = document.querySelector('.pagination');
          const children = selectPagination.firstElementChild.childNodes;
@@ -167,8 +167,6 @@ const appendPageLinks = (list) => {
 }
 
 function showFirstPage() {
-   // // Reset Active Page to full Student List
-   // students = students;
    // Start on Page 1
    showPage(students, 1);
    // Reset all pagination links except for 1
@@ -194,3 +192,4 @@ appendSearchBar();
 appendPageLinks(students);
 // Default by selecting the first page
 showFirstPage();
+// showPage(students, 1);

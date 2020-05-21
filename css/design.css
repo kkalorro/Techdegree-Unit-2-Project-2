@@ -132,3 +132,11 @@ body{
   .button-reset {
     background-color: dodgerblue;
   }
+
+#results-found {
+  /* font-weight: bold; */
+  font-size: larger;
+  font-style: italic;
+  padding-bottom: 1rem;
+  padding-left: .5rem;
+}

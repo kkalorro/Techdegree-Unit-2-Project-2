@@ -1,5 +1,3 @@
-// Searches need to compare no space/lowercase with no space/lowercase
-
 //////////
 // Init //
 //////////
@@ -10,9 +8,9 @@ const selectPage = document.querySelector('.page');
 const selectPageHeader = document.querySelector('.page-header');
 // Select container holding list students
 const selectUnorderedList = document.querySelector('.student-list');
-// Array of students
-const students = selectUnorderedList.children;
 
+// The default list of students taken from the HTML source
+const students = selectUnorderedList.children;
 // Total number of entries to show
 const maxItemsPerPage = 10;
 
@@ -20,8 +18,8 @@ const maxItemsPerPage = 10;
 // Functions //
 ///////////////
 
-// Hide or show all students
-function hideAllListItems(bool) {
+// Bool toggle to hide or show all students
+function hideStudents(bool) {
    for (let i = 0; i < students.length; i++) {
       students[i].hidden = bool;
    }
@@ -50,27 +48,36 @@ function appendSearchBar() {
       const selectSearchForm = document.querySelector('#form-search');
       const searchTextbox = selectSearchForm.firstElementChild;
 
-      // Hide all students
-      hideAllListItems(true);
+      // Hide all students in non-filtered list
+      hideStudents(true);
 
-      // Go through list then find what matches the textbox
+      // Filtered list of students
+      studentsFiltered = [];
+
+      // Go through students list then find what matches the search textbox
       for (let i = 0; i < students.length; i++) {
-         
-      // Remove all whitespaces (Source: https://stackoverflow.com/questions/6623231/remove-all-white-spaces-from-text)
-      const studentInfo = students[i].textContent.replace(/\s/g, '').toLocaleLowerCase();
 
-      // Search functionality (Source: https://www.w3schools.com/jsref/jsref_search.asp)
-      const searchMatch = studentInfo.search(searchTextbox.value);
- 
-         // If match found then show student
+         // Remove all whitespaces (Source: https://stackoverflow.com/questions/6623231/remove-all-white-spaces-from-text)
+         const studentInfo = students[i].textContent.replace(/\s/g, '').toLocaleLowerCase();
+
+         // Search functionality (Source: https://www.w3schools.com/jsref/jsref_search.asp)
+         const searchMatch = studentInfo.search(searchTextbox.value.replace(/\s/g, '').toLocaleLowerCase());
+
+         // Clear search text box now that we have stored the data
+         searchTextbox.value = '';
+   
+         // If match found then update filtered students list
          if (searchMatch >= 0) {
-             students[i].hidden = false;
+            studentsFiltered.push(students[i]);
          }
       }
 
-      // Reset textbox text
-      searchTextbox.value = '';
-   })
+      // Update pagination links based on filtered students list
+      appendPageLinks(studentsFiltered);
+
+      // Show first page of the filtered list
+      showPage(studentsFiltered, 1);
+   });
 
    // Append search button to form
    form.appendChild(buttonSearch);
@@ -81,7 +88,8 @@ function appendSearchBar() {
    buttonReset.textContent = 'RESET';
    buttonReset.addEventListener('click', (e) => {
       e.preventDefault();
-      resetFilter();
+      appendPageLinks(students);
+      showFirstPage();
    })
    // Append reset button to form
    form.appendChild(buttonReset);
@@ -90,11 +98,11 @@ function appendSearchBar() {
    selectPageHeader.appendChild(form);
 }
 
-// Show filtered students on page
+// Show items from designated list by 10 results at a time
 const showPage = (list, page) => {
    // Hide all entries
-   hideAllListItems(true);
-   // startingIndex
+   hideStudents(true);
+   // Starting index
    const startIndex = (page - 1) * maxItemsPerPage;
    // endingIndex subtracted by one to accomodate for computer counting
    const endIndex = (page * maxItemsPerPage);
@@ -103,8 +111,6 @@ const showPage = (list, page) => {
       // if index >= firstItem && index <= lastItem
       if (i >= startIndex && i < endIndex) {
          // showItems
-         // console.log(`[${i}] - ${list[i].firstElementChild.innerText}`);
-         // console.log(i);
          list[i].hidden = false;
       }
    }
@@ -112,10 +118,16 @@ const showPage = (list, page) => {
 
 // Create bottom pagination links
 const appendPageLinks = (list) => {
-   // Pages needed by divinding total list items by max items per page rounded up
+
+   // Remove any preexisting pagination divs
+   if (selectPage.lastElementChild.className ==='pagination') {
+      selectPage.removeChild(selectPage.lastElementChild);
+   } 
+
+   // Determine pages needed by divinding total list items by max items per page rounded up
    const pages = Math.ceil(list.length / maxItemsPerPage);
    
-   // Create a div and give it the 'pagination' class, embed an unordered list in it
+   // Create a div for pagination with an unordered list embedded
    const div = document.createElement('div');
    div.className = 'pagination';
    const ul = document.createElement('ul');
@@ -129,9 +141,10 @@ const appendPageLinks = (list) => {
       // Make first "active" by default
       // Abbrv. If-statement, source: https://www.thoughtco.com/create-a-shorter-if-statement-in-javascript-2037428
       (i === 1) ? a.className = 'active' : a.className = '';
+
       a.addEventListener('click', (e) => {
          showPage(students, a.textContent);
-         // Loop over pagination links
+         // Select pagination div
          const selectPagination = document.querySelector('.pagination');
          const children = selectPagination.firstElementChild.childNodes;
          // Go through all pagination links and make only the selected "active" class
@@ -143,6 +156,7 @@ const appendPageLinks = (list) => {
             }
          } 
       })
+
       // Append link to list item, then list item into unordered page
       li.appendChild(a);
       ul.appendChild(li);     
@@ -152,16 +166,17 @@ const appendPageLinks = (list) => {
    selectPage.appendChild(div);
 }
 
-function resetFilter() {
+function showFirstPage() {
+   // // Reset Active Page to full Student List
+   // students = students;
    // Start on Page 1
    showPage(students, 1);
    // Reset all pagination links except for 1
    const selectPagination = document.querySelector('.pagination');
    const children = selectPagination.firstElementChild.childNodes;
-   // Go through all pagination links and make only the fist one "active"
+   // Go through all pagination links and make only the first one "active"
    for (i = 0; i < children.length; i++) {
       const child = children[i].firstChild;
-      console.log(child);
       if (i === 0) {
          child.className = 'active';
       } else {
@@ -177,58 +192,5 @@ function resetFilter() {
 appendSearchBar();
 // Add page links to the bottom of the webpage
 appendPageLinks(students);
-resetFilter();
-
-/////////////////////////
-// Debugging functions //
-/////////////////////////
-
-// Random number generator for random gender and avatar
-function randNum(num) {
-   return Math.floor(Math.random() * num);
-}
-
-document.addEventListener('click', (event) => {
-   if (event.target.id == 'buttonReset') {
-      hideAllListItems(false);
-   }
-   if (event.target.id == 'buttonAddName') {
-      let newLi = document.createElement('li');
-      newLi.className = 'student-item cf';
-      const customName = selectInputTextName.value;
-      // Replace spaces with a period (Source: https://stackoverflow.com/questions/3794919/replace-all-spaces-in-a-string-with)
-      let customEmail = customName.replace(/ /g, '.').toLocaleLowerCase();
-      
-      // Vanity function that converts single digit numbers into double digits
-      function makeDoubleDigit(val) {
-         if (val < 10) { return newVal = '0' + val; } else { return val; }   
-      }
-      // Auto generate details like Date, gender, and portrait
-      const customDate = new Date();
-      const mm = makeDoubleDigit(customDate.getMonth() + 1);
-      const dd = makeDoubleDigit(customDate.getDate());
-      const yy = customDate.getFullYear().toString().substr(-2);
-      let gender = '';
-      // I learned this If-then tecnique from: https://stackoverflow.com/questions/8860654/javascript-single-line-if-statement-best-syntax-this-alternative
-      (randNum(2)) ? gender = 'women' : gender = 'men';
-      let customerPortrait = `https://randomuser.me/api/portraits/thumb/${gender}/${randNum(99)}.jpg`;
-      newLi.innerHTML = 
-      `
-         <div class="student-details">
-         <img class="avatar" src="${customerPortrait}">
-         <h3>${customName.toLocaleLowerCase()}</h3>
-         <span class="email">${customEmail}@example.com</span>
-         </div>
-         <div class="joined-details">
-         <span class="date">Joined ${mm}/${dd}/${yy}</span>
-         </div>
-      `;
-      selectUnorderedList.appendChild(newLi);
-   }
-
-   // Remove first list item listener
-   if (event.target.id == 'buttonPopTop') { selectUnorderedList.removeChild(selectUnorderedList.firstElementChild); }
-
-   // Remove last list item listener
-      if (event.target.id == 'buttonPopBottom') { selectUnorderedList.removeChild(selectUnorderedList.lastElementChild); }
-});
+// Default by selecting the first page
+showFirstPage();

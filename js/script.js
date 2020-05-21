@@ -87,9 +87,11 @@ function appendSearchBar() {
    buttonReset.className = 'button-reset';
    buttonReset.textContent = 'RESET';
    buttonReset.addEventListener('click', (e) => {
+      // Don't reload page when button is pressed
       e.preventDefault();
+      // Revert pagination links and page back to default
       appendPageLinks(students);
-      showFirstPage();
+      showPage(students, 1);
    })
    // Append reset button to form
    form.appendChild(buttonReset);
@@ -98,13 +100,13 @@ function appendSearchBar() {
    selectPageHeader.appendChild(form);
 }
 
-// Show items from designated list by 10 results at a time
+// Show items from designated list by units of maxItemsPerPage
 const showPage = (list, page) => {
    // Hide all entries
    hideStudents(true);
    // Starting index
    const startIndex = (page - 1) * maxItemsPerPage;
-   // endingIndex subtracted by one to accomodate for computer counting
+   // Ending index
    const endIndex = (page * maxItemsPerPage);
    // Loop over items in list
    for (let i = 0; i < list.length; i++) {
@@ -134,7 +136,7 @@ const appendPageLinks = (list) => {
 
    // For every page, add li and a tags with the page number text
    for (let i = 1; i <= pages; i++) {
-      // Create List Item and a Hyperlink with the text displaying the page number
+      // Create list item and a hyperlink with text displaying the page number
       const li = document.createElement('li');
       const a = document.createElement('a');
       a.textContent = i;
@@ -157,30 +159,13 @@ const appendPageLinks = (list) => {
          } 
       })
 
-      // Append link to list item, then list item into unordered page
+      // Append link to list item, then list item into unordered list
       li.appendChild(a);
       ul.appendChild(li);     
    }
-   // Append unordered list to new Div, then append new Div to Class page
+   // Append unordered list to new div, then append new div to class page
    div.appendChild(ul);
    selectPage.appendChild(div);
-}
-
-function showFirstPage() {
-   // Start on Page 1
-   showPage(students, 1);
-   // Reset all pagination links except for 1
-   const selectPagination = document.querySelector('.pagination');
-   const children = selectPagination.firstElementChild.childNodes;
-   // Go through all pagination links and make only the first one "active"
-   for (i = 0; i < children.length; i++) {
-      const child = children[i].firstChild;
-      if (i === 0) {
-         child.className = 'active';
-      } else {
-         child.className = '';
-      }
-   } 
 }
 
 ///////////////////////
@@ -191,5 +176,4 @@ appendSearchBar();
 // Add page links to the bottom of the webpage
 appendPageLinks(students);
 // Default by selecting the first page
-showFirstPage();
-// showPage(students, 1);
+showPage(students, 1);

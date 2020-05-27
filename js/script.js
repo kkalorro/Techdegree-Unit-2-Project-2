@@ -4,8 +4,6 @@
 
 // Select class Page
 const selectPage = document.querySelector('.page');
-// Select header
-const selectPageHeader = document.querySelector('.page-header');
 // Select container holding list students
 const selectUnorderedList = document.querySelector('.student-list');
 
@@ -27,26 +25,10 @@ function hideStudents(bool) {
 
 // Create search form elements and functionality
 function appendSearchBar() {
-   // Create form
-   const form = document.createElement('form');
-   form.id = 'form-search';
-
-   // Create input search textbox
-   const textbox = document.createElement('input');
-   textbox.className = 'element-search';
-   textbox.type = 'text';
-   form.appendChild(textbox);
-
-   // Create search button
-   const buttonSearch = document.createElement('input');
-   buttonSearch.className = 'element-search';
-   buttonSearch.type = 'submit';
-
-   // Execute search when submitted
-   buttonSearch.addEventListener('click', (e) => {
-      e.preventDefault();
-      const selectSearchForm = document.querySelector('#form-search');
-      const searchTextbox = selectSearchForm.firstElementChild;
+   // Search function
+   function searchStudents(e) {
+      // Select search textbox
+      const selectSearchTextbox = document.querySelector('#input-search');
 
       // Hide all students in non-filtered list
       hideStudents(true);
@@ -61,7 +43,7 @@ function appendSearchBar() {
          const studentInfo = students[i].textContent.replace(/\s/g, '').toLocaleLowerCase();
 
          // Search functionality (Source: https://www.w3schools.com/jsref/jsref_search.asp)
-         const searchMatch = studentInfo.search(searchTextbox.value.replace(/\s/g, '').toLocaleLowerCase());
+         const searchMatch = studentInfo.search(selectSearchTextbox.value.replace(/\s/g, '').toLocaleLowerCase());
    
          // If match found then update filtered students list
          if (searchMatch >= 0) {
@@ -69,35 +51,88 @@ function appendSearchBar() {
          }
       }
 
-      // Clear search text box now that we're done with it
-      searchTextbox.value = '';
+      // If no matches found show no results message
+      const selectResults = document.querySelector('#div-results');
+      if (studentsFiltered.length === 0) {
+         selectResults.hidden = false;
+      } else {
+         selectResults.hidden = true;
+      }
 
       // Update pagination links based on filtered students list
       appendPageLinks(studentsFiltered);
 
       // Show first page of the filtered list
       showPage(studentsFiltered, 1);
+   }
+
+   // Create form
+   const form = document.createElement('form');
+   form.id = 'form-search';
+
+   // Create label
+   const label = document.createElement('label');
+   label.className = 'element-search';
+   label.textContent = 'Search:';
+   form.appendChild(label);
+
+   // Create input search textbox
+   const textbox = document.createElement('input');
+   textbox.id = 'input-search';
+   textbox.className = 'element-search';
+   textbox.type = 'text';
+
+   // Perform a search everytime a key is released
+   textbox.addEventListener('keyup', (e) => {
+      searchStudents(e);
    });
 
-   // Append search button to form
-   form.appendChild(buttonSearch);
+   // Append search textbox into form
+   form.appendChild(textbox);
 
    // Create reset button
    const buttonReset = document.createElement('button');
-   buttonReset.className = 'button-reset';
+   buttonReset.className = 'element-search';
    buttonReset.textContent = 'RESET';
+
+   // When reset page when button is clicked
    buttonReset.addEventListener('click', (e) => {
       // Don't reload page when button is pressed
       e.preventDefault();
-      // Revert pagination links and page back to default
+      // Hide the no results message
+      const selectResults = document.querySelector('#div-results');
+      selectResults.hidden = true;
+      // Clear search text box value
+      const selectSearchTextbox = document.querySelector('#input-search');
+      selectSearchTextbox.value = '';
+      // Revert pagination links back to default
       appendPageLinks(students);
+      // Revert page load back to default
       showPage(students, 1);
    })
+
    // Append reset button to form
    form.appendChild(buttonReset);
 
-   // Append form into Page Header
-   selectPageHeader.appendChild(form);
+   // Insert form before student list
+   selectPage.insertBefore(form, selectUnorderedList);
+}
+
+// Create no results message box
+function appendMessageBox() {
+   // Create div to house message box
+   const div = document.createElement('div');
+   div.id = 'div-results';
+   div.hidden = true;
+
+   // Create message area
+   const p = document.createElement('p');
+   p.id = 'p-results';
+   p.textContent = 'No results found.';
+   div.appendChild(p);
+   
+   // Insert message box before students list
+   selectPage.insertBefore(div, selectUnorderedList);
 }
 
 // Show items from designated list by units of maxItemsPerPage
@@ -139,6 +174,7 @@ const appendPageLinks = (list) => {
       // Create list item and a hyperlink with text displaying the page number
       const li = document.createElement('li');
       const a = document.createElement('a');
+      a.href = '#';
       a.textContent = i;
       // Make first "active" by default
       // Abbrv. If-statement, source: https://www.thoughtco.com/create-a-shorter-if-statement-in-javascript-2037428
@@ -167,12 +203,14 @@ const appendPageLinks = (list) => {
    div.appendChild(ul);
    selectPage.appendChild(div);
 }
-
+   
 ///////////////////////
 // Runtime Functions //
 ///////////////////////
 // Add search bar to webpage
 appendSearchBar();
+// Add no results message box
+appendMessageBox();
 // Add page links to the bottom of the webpage
 appendPageLinks(students);
 // Default by selecting the first page
